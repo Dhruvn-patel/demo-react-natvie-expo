@@ -1,12 +1,7 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-} from "react-native";
+import { StyleSheet, View } from "react-native";
 import CountryPicker, {
+  Country,
   CountryCode,
   DARK_THEME,
 } from "react-native-country-picker-modal";
@@ -17,7 +12,7 @@ interface CountryPickerProps {
   withCallingCode?: boolean;
   withFilter?: boolean;
   withEmoji?: boolean;
-  onSelect: (country: any) => void;
+  onSelect: (country: Country) => void;
 }
 
 const CountryPickerItem: React.FC<CountryPickerProps> = ({
@@ -41,7 +36,10 @@ const CountryPickerItem: React.FC<CountryPickerProps> = ({
         withFilter={withFilter}
         withEmoji={withEmoji}
         onSelect={handleSelectCountry}
-        theme={DARK_THEME}
+        containerButtonStyle={{
+          alignItems: "center",
+          justifyContent: "center",
+        }}
       />
     </View>
   );

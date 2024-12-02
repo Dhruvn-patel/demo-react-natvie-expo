@@ -10,10 +10,7 @@ import {
   Platform,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import CountryPicker, {
-  CountryCode,
-  Country,
-} from "react-native-country-picker-modal";
+import { CountryCode, Country } from "react-native-country-picker-modal";
 import { useRouter } from "expo-router";
 import CountryPickerItem from "@/components/atoms/CountryPickerItem";
 
@@ -22,10 +19,6 @@ const signUp: React.FC = () => {
   const [phone, setPhone] = useState("");
   const [countryCode, setCountryCode] = useState<CountryCode>("IN");
   const [callingCode, setCallingCode] = useState<string>("91");
-  // const [withFlag, setWithFlag] = useState<boolean>(true);
-  // const [withEmoji, setWithEmoji] = useState<boolean>(false);
-  // const [withFilter, setWithFilter] = useState<boolean>(true);
-  // const [withCallingCode, setWithCallingCode] = useState<boolean>(false);
 
   // Handle country selection
   const handleSelectCountry = (country: Country) => {
@@ -60,14 +53,11 @@ const signUp: React.FC = () => {
       behavior={Platform.OS === "ios" ? "padding" : undefined}
       style={styles.container}
     >
-      {/* App Logo */}
       <Text style={styles.logo}>Careerbox</Text>
 
-      {/* Title */}
       <Text style={styles.title}>Sign Up</Text>
       <Text style={styles.subtitle}>Build the skills to drive your career</Text>
 
-      {/* Gradient Line */}
       <LinearGradient
         colors={["#2F57EF", "#B966E7"]}
         start={{ x: 0, y: 0 }}
@@ -75,13 +65,15 @@ const signUp: React.FC = () => {
         style={styles.gradientLine}
       />
 
-      {/* Phone Number Input */}
+      <View style={styles.phoneTextContainer}>
+        <Text style={styles.phoneText}>Phone Number</Text>
+      </View>
       <View style={styles.inputContainer}>
         <View style={styles.countryPickerContainer}>
-          <CountryPickerItem
+          {/* <CountryPickerItem
             countryCode={countryCode}
             onSelect={handleSelectCountry}
-          />
+          /> */}
           <Text style={styles.callingCode}>+{callingCode}</Text>
         </View>
         <TextInput
@@ -94,7 +86,6 @@ const signUp: React.FC = () => {
         />
       </View>
 
-      {/* Continue Button */}
       <TouchableOpacity onPress={handleSignUp} style={styles.buttonContainer}>
         <LinearGradient
           colors={["#2F57EF", "#B966E7"]}
@@ -106,7 +97,6 @@ const signUp: React.FC = () => {
         </LinearGradient>
       </TouchableOpacity>
 
-      {/* Login Link */}
       <TouchableOpacity onPress={redirectLogin}>
         <Text style={styles.loginLink}>
           Already have an account? <Text style={styles.loginText}>Login</Text>
@@ -149,6 +139,17 @@ const styles = StyleSheet.create({
     marginTop: 5,
     marginBottom: 20,
     borderRadius: 1,
+  },
+  phoneTextContainer: {
+    width: "100%",
+    paddingHorizontal: 10,
+  },
+  phoneText: {
+    fontWeight: "bold",
+    textAlign: "left",
+    lineHeight: 21,
+    fontSize: 14,
+    marginVertical: 10,
   },
   inputContainer: {
     flexDirection: "row",

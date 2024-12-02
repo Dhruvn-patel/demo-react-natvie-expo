@@ -47,6 +47,7 @@ const VerifyOtp: React.FC = () => {
         style={styles.gradientLine}
       />
 
+      <Text style={styles.otpText}>Enter Otp</Text>
       <TextInput
         style={styles.input}
         placeholder="######"
@@ -120,7 +121,7 @@ const styles = StyleSheet.create({
   inputContainer: {
     marginBlockStart: 10,
     width: "100%",
-    position: "relative", // Needed for absolute positioning of "Resend Code"
+    position: "relative",
   },
   input: {
     width: "100%",
@@ -160,5 +161,17 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
+  },
+  otpContainer: {
+    width: "100%",
+    paddingHorizontal: 5,
+  },
+  otpText: {
+    fontWeight: "bold",
+    width: "100%",
+    fontSize: 16,
+    lineHeight: 21,
+    alignSelf: "flex-start",
+    color: "#000",
   },
 });

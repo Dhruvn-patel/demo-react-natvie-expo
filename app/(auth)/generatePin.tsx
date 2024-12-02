@@ -33,7 +33,7 @@ const GeneratePin: React.FC = () => {
     Alert.alert("Navigate", "Navigating back to login...");
   };
   const handleSetupProfile = () => {
-    router.push("/(profile)/createProfile");
+    router.push("/(app)/createProfile");
   };
 
   // Render CompleteAuthScreen if MPIN is successfully created

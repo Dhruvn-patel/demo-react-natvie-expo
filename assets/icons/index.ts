@@ -1,6 +1,6 @@
-import EyeOffIcon from "./eyeOff.svg";
-const svgs = Object.freeze({
-  EyeOffIcon,
-});
+// import EyeOffIcon from "@/assets/icons/";
+// const svgs = Object.freeze({
+//   EyeOffIcon,
+// });
 
-export default svgs;
+// export default svgs;
