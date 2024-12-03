@@ -85,7 +85,7 @@ const signIn: React.FC = () => {
         </View>
       )}
 
-      <Text style={styles.inputLabel}>Enter Pin</Text>
+      <Text style={styles.inputLabel}>Enter Pi n</Text>
       <View style={styles.pinInputContainer}>
         <TextInput
           style={styles.input}
