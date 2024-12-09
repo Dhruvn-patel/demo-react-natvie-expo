@@ -13,9 +13,12 @@ import { LinearGradient } from "expo-linear-gradient";
 import { CountryCode, Country } from "react-native-country-picker-modal";
 import { useRouter } from "expo-router";
 import CountryPickerItem from "@/components/atoms/CountryPickerItem";
+import { useDispatch } from "@/hooks/redux";
+import { createAccount } from "@/store/auth/createAccount";
 
 const signUp: React.FC = () => {
   const router = useRouter();
+  const dispatch = useDispatch();
   const [phone, setPhone] = useState("");
   const [countryCode, setCountryCode] = useState<CountryCode>("IN");
   const [callingCode, setCallingCode] = useState<string>("91");
@@ -41,6 +44,8 @@ const signUp: React.FC = () => {
     );
     // Implement API call or navigation logic here
 
+    const payload = {};
+    dispatch(createAccount(payload));
     router.push("/(auth)/verifyOtp");
   };
 
@@ -70,10 +75,10 @@ const signUp: React.FC = () => {
       </View>
       <View style={styles.inputContainer}>
         <View style={styles.countryPickerContainer}>
-          {/* <CountryPickerItem
+          <CountryPickerItem
             countryCode={countryCode}
             onSelect={handleSelectCountry}
-          /> */}
+          />
           <Text style={styles.callingCode}>+{callingCode}</Text>
         </View>
         <TextInput

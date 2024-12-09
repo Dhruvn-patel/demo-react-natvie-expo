@@ -1,4 +1,3 @@
-import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
   View,
@@ -7,8 +6,11 @@ import {
   TouchableOpacity,
   StyleSheet,
   FlatList,
+  ListRenderItem,
 } from "react-native";
+import { useRouter } from "expo-router";
 
+// Define types for dropdown state and options
 type DropdownState = {
   courseLevel: string;
   branch: string;
@@ -22,17 +24,26 @@ type DropdownVisibility = {
   [key in keyof DropdownState]: boolean;
 };
 
+type FormField = {
+  label: string;
+  field: keyof DropdownState;
+  isTextInput?: boolean;
+};
+
+// Dropdown options
 const options: Record<keyof DropdownState, string[]> = {
   courseLevel: ["10th", "12th", "Graduate"],
   branch: ["Engineering", "Medical", "B.Sc.", "B.A."],
   subject: ["Physics", "Mathematics", "History", "Biology"],
+  university: [], // Text input field; no options required
   year: ["2023", "2022", "2021", "2020"],
   domicile: ["California", "New York", "Texas", "Florida"],
-  university: [],
 };
 
 const educationDetails: React.FC = () => {
   const router = useRouter();
+
+  // States for dropdown values and visibility
   const [dropdowns, setDropdowns] = useState<DropdownState>({
     courseLevel: "",
     branch: "",
@@ -46,15 +57,17 @@ const educationDetails: React.FC = () => {
     courseLevel: false,
     branch: false,
     subject: false,
+    university: false,
     year: false,
     domicile: false,
-    university: false,
   });
 
+  // Navigate to the next screen
   const onSave = () => {
     router.push("/(app)/eligibilityForm");
   };
 
+  // Toggle dropdown visibility
   const handleDropdownToggle = (field: keyof DropdownState): void => {
     setDropdownVisible((prev) => ({
       ...prev,
@@ -62,6 +75,7 @@ const educationDetails: React.FC = () => {
     }));
   };
 
+  // Handle dropdown selection
   const handleDropdownSelect = (
     field: keyof DropdownState,
     value: string
@@ -76,12 +90,15 @@ const educationDetails: React.FC = () => {
     }));
   };
 
+  // Render dropdown menu
   const renderDropdown = (field: keyof DropdownState): JSX.Element | null => {
-    return isDropdownVisible[field] ? (
+    if (!isDropdownVisible[field]) return null;
+
+    return (
       <View style={styles.dropdown}>
         <FlatList
           data={options[field]}
-          keyExtractor={(item, index) => index.toString()}
+          keyExtractor={(item, index) => `${field}-${index}`}
           renderItem={({ item }) => (
             <TouchableOpacity
               style={styles.dropdownItem}
@@ -92,50 +109,45 @@ const educationDetails: React.FC = () => {
           )}
         />
       </View>
-    ) : null;
+    );
   };
 
-  // Create a list of items to render in the form
-  const formFields = [
+  // Form fields
+  const formFields: FormField[] = [
     { label: "Latest Passout Course Level", field: "courseLevel" },
     { label: "Branch/Stream/Degree", field: "branch" },
     { label: "Specialize Subject", field: "subject" },
     { label: "Exam Board/University", field: "university", isTextInput: true },
     { label: "Passing Year", field: "year" },
     { label: "Domicile", field: "domicile" },
-  ] as any;
+  ];
 
-  const renderFormFields = ({
-    item,
-  }: {
-    item: { label: string; field: keyof DropdownState; isTextInput?: boolean };
-  }) => {
-    return (
-      <View style={styles.fieldContainer}>
-        <Text style={styles.label}>{item.label}</Text>
-        {item.isTextInput ? (
-          <TextInput
-            style={styles.input}
-            placeholder={`Enter ${item.label}`}
-            value={dropdowns[item.field]}
-            onChangeText={(text) =>
-              setDropdowns((prev) => ({ ...prev, [item.field]: text }))
-            }
-          />
-        ) : (
-          <TouchableOpacity
-            style={styles.input}
-            onPress={() => handleDropdownToggle(item.field)}
-          >
-            <Text style={styles.inputText}>
-              {dropdowns[item.field] || `Select ${item.label}`}
-            </Text>
-          </TouchableOpacity>
-        )}
-        {renderDropdown(item.field)}
-      </View>
-    );
-  };
+  // Render form fields dynamically
+  const renderFormFields: ListRenderItem<FormField> = ({ item }) => (
+    <View style={styles.fieldContainer}>
+      <Text style={styles.label}>{item.label}</Text>
+      {item.isTextInput ? (
+        <TextInput
+          style={styles.input}
+          placeholder={`Enter ${item.label}`}
+          value={dropdowns[item.field]}
+          onChangeText={(text) =>
+            setDropdowns((prev) => ({ ...prev, [item.field]: text }))
+          }
+        />
+      ) : (
+        <TouchableOpacity
+          style={styles.input}
+          onPress={() => handleDropdownToggle(item.field)}
+        >
+          <Text style={styles.inputText}>
+            {dropdowns[item.field] || `Select ${item.label}`}
+          </Text>
+        </TouchableOpacity>
+      )}
+      {renderDropdown(item.field)}
+    </View>
+  );
 
   return (
     <View style={styles.container}>
@@ -145,18 +157,16 @@ const educationDetails: React.FC = () => {
         renderItem={renderFormFields}
         ListHeaderComponent={
           <View style={styles.headerContainer}>
-            <Text style={styles.backButton}>{"< Back"}</Text>
-            <Text style={styles.skipButton}>Skip {">>"}</Text>
+            <Text style={styles.skip}>Skip {">>"}</Text>
+            <Text style={styles.header}>Education Details</Text>
+            <Text style={styles.subHeader}>
+              Fill up your latest passout education details
+            </Text>
+            <View style={styles.divider} />
           </View>
         }
         ListFooterComponent={
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => {
-              console.log("Submitted Education Details:", dropdowns);
-              onSave();
-            }}
-          >
+          <TouchableOpacity style={styles.button} onPress={onSave}>
             <Text style={styles.buttonText}>Save & Continue</Text>
           </TouchableOpacity>
         }
@@ -168,73 +178,86 @@ const educationDetails: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 20,
     backgroundColor: "#fff",
   },
   headerContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 10,
+    alignItems: "center",
+    marginBottom: 30,
   },
-  backButton: {
+  skip: {
+    alignSelf: "flex-end",
+    color: "#007BFF",
     fontSize: 16,
-    color: "#000",
+    fontWeight: "600",
   },
-  skipButton: {
-    fontSize: 16,
-    color: "#000",
+  header: {
+    fontSize: 24,
+    fontWeight: "700",
+    textAlign: "center",
+    color: "#333",
+    marginVertical: 10,
+  },
+  subHeader: {
+    fontSize: 14,
+    textAlign: "center",
+    color: "#7C7C7C",
+    marginTop: 5,
+  },
+  divider: {
+    height: 2,
+    backgroundColor: "#007BFF",
+    width: "50%",
+    alignSelf: "center",
+    marginVertical: 15,
+  },
+  fieldContainer: {
+    marginBottom: 25,
   },
   label: {
     fontSize: 14,
-    color: "#000",
+    fontWeight: "600",
     marginBottom: 5,
-    fontWeight: "500",
+    color: "#1A1B1D",
   },
   input: {
+    height: 50,
+    borderRadius: 8,
     borderWidth: 1,
     borderColor: "#E0E0E0",
-    borderRadius: 8,
     padding: 12,
-    marginBottom: 15,
-    fontSize: 16,
-    color: "#000",
+    justifyContent: "center",
     backgroundColor: "#F9F9F9",
   },
   inputText: {
-    fontSize: 16,
+    fontSize: 14,
     color: "#7C7C7C",
   },
   dropdown: {
-    maxHeight: 150,
     borderWidth: 1,
     borderColor: "#E0E0E0",
     borderRadius: 8,
+    marginTop: 5,
     backgroundColor: "#fff",
-    marginBottom: 15,
-    zIndex: 1,
   },
   dropdownItem: {
     padding: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#F0F0F0",
   },
   dropdownItemText: {
-    fontSize: 16,
-    color: "#000",
+    fontSize: 14,
+    color: "#1A1B1D",
   },
   button: {
+    marginTop: 20,
     backgroundColor: "#1A1B1D",
-    padding: 15,
     borderRadius: 8,
+    paddingVertical: 15,
     alignItems: "center",
-    margin: 20,
   },
   buttonText: {
     color: "#fff",
     fontSize: 16,
-    fontWeight: "bold",
-  },
-  fieldContainer: {
-    marginBottom: 20,
+    fontWeight: "700",
   },
 });
 

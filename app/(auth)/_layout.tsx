@@ -15,6 +15,7 @@ const Layout = () => {
         <Stack.Screen name="signUp" options={{ headerShown: false }} />
         <Stack.Screen name="verifyOtp" options={{ headerShown: false }} />
         <Stack.Screen name="generatePin" options={{ headerShown: false }} />
+        <Stack.Screen name="forgetPin" options={{ headerShown: false }} />
       </Stack>
     </SafeAreaProvider>
   );

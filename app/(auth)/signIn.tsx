@@ -39,6 +39,9 @@ const signIn: React.FC = () => {
   const redirectSignUp = () => {
     return router.push("/(auth)/signUp");
   };
+  const onClickForgetPin = () => {
+    return router.push("/(auth)/forgetPin");
+  };
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Careerbox</Text>
@@ -85,7 +88,7 @@ const signIn: React.FC = () => {
         </View>
       )}
 
-      <Text style={styles.inputLabel}>Enter Pi n</Text>
+      <Text style={styles.inputLabel}>Enter Pin</Text>
       <View style={styles.pinInputContainer}>
         <TextInput
           style={styles.input}
@@ -99,7 +102,9 @@ const signIn: React.FC = () => {
         </TouchableOpacity> */}
       </View>
       <TouchableOpacity style={styles.forgotPinButton}>
-        <Text style={styles.forgotPinText}>Forgot PIN?</Text>
+        <Text style={styles.forgotPinText} onPress={onClickForgetPin}>
+          Forgot PIN?
+        </Text>
       </TouchableOpacity>
 
       <TouchableOpacity

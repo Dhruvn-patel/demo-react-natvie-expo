@@ -9,6 +9,8 @@ import {
   FlatList,
   KeyboardAvoidingView,
   Alert,
+  ScrollView,
+  Platform,
 } from "react-native";
 
 type ExamScore = {
@@ -75,99 +77,104 @@ const eligibilityForm: React.FC = () => {
   };
 
   return (
-    <KeyboardAvoidingView style={styles.container}>
-      {/* Header */}
-      <View style={styles.headerContainer}>
-        <Text style={styles.backButton}>{"< Back"}</Text>
-        <Text style={styles.skipButton}>Skip {">>"}</Text>
-      </View>
-      <Text style={styles.header}>Check Your Eligibility</Text>
-      <Text style={styles.subHeader}>
-        Fill up your latest passout education details
-      </Text>
-      <View style={styles.divider} />
-
-      {/* Cast Category */}
-      <Text style={styles.label}>Cast Category</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="General, OBC, SC, ST, EWS, P..."
-        value={castCategory}
-        onChangeText={setCastCategory}
-      />
-
-      {/* 12th Exam Passout */}
-      <View style={styles.switchContainer}>
-        <Text style={styles.label}>12th Exam Passout?</Text>
-        <Switch
-          value={is12thPass}
-          onValueChange={(value) => setIs12thPass(value)}
-        />
-      </View>
-
-      {/* Added Exam Scores */}
-      {examScores.map((score) => (
-        <View key={score.id} style={styles.scoreContainer}>
-          <Text style={styles.scoreText}>
-            {score.name}: {score.marks}/{score.total} ({score.percentage})
-          </Text>
-          <TouchableOpacity
-            onPress={() => removeExamScore(score.id)}
-            style={styles.removeButton}
-          >
-            <Text style={styles.removeButtonText}>X</Text>
-          </TouchableOpacity>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        {/* Header */}
+        <View style={styles.headerContainer}>
+          <Text style={styles.backButton}>{"< Back"}</Text>
+          <Text style={styles.skipButton}>Skip {">>"}</Text>
         </View>
-      ))}
+        <Text style={styles.header}>Check Your Eligibility</Text>
+        <Text style={styles.subHeader}>
+          Fill up your latest passout education details
+        </Text>
+        <View style={styles.divider} />
 
-      {/* Add Exam Score */}
-      <TouchableOpacity style={styles.addButton} onPress={addExamScore}>
-        <Text style={styles.addButtonText}>Add Last Exam Score</Text>
-      </TouchableOpacity>
+        {/* Cast Category */}
+        <Text style={styles.label}>Cast Category</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="General, OBC, SC, ST, EWS, P..."
+          value={castCategory}
+          onChangeText={setCastCategory}
+        />
 
-      {/* Regular/Entrance Exam */}
-      <Text style={styles.label}>Regular/Entrance Exam</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Select Exam"
-        value={regularExam}
-        onChangeText={setRegularExam}
-      />
+        {/* 12th Exam Passout */}
+        <View style={styles.switchContainer}>
+          <Text style={styles.label}>12th Exam Passout?</Text>
+          <Switch
+            value={is12thPass}
+            onValueChange={(value) => setIs12thPass(value)}
+          />
+        </View>
 
-      {/* Rank */}
-      <Text style={styles.label}>Rank:</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter Rank"
-        keyboardType="numeric"
-        value={rank}
-        onChangeText={setRank}
-      />
+        {/* Added Exam Scores */}
+        {examScores.map((score) => (
+          <View key={score.id} style={styles.scoreContainer}>
+            <Text style={styles.scoreText}>
+              {score.name}: {score.marks}/{score.total} ({score.percentage})
+            </Text>
+            <TouchableOpacity
+              onPress={() => removeExamScore(score.id)}
+              style={styles.removeButton}
+            >
+              <Text style={styles.removeButtonText}>X</Text>
+            </TouchableOpacity>
+          </View>
+        ))}
 
-      {/* CGPA */}
-      <Text style={styles.label}>CGPA / Percentile Point:</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter CGPA or Percentile"
-        keyboardType="numeric"
-        value={cgpa}
-        onChangeText={setCgpa}
-      />
+        {/* Add Exam Score */}
+        <TouchableOpacity style={styles.addButton} onPress={addExamScore}>
+          <Text style={styles.addButtonText}>Add Last Exam Score</Text>
+        </TouchableOpacity>
 
-      {/* Obtain Mark */}
-      <Text style={styles.label}>Obtain Mark:</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter Obtain Mark"
-        keyboardType="numeric"
-        value={obtainMark}
-        onChangeText={setObtainMark}
-      />
+        {/* Regular/Entrance Exam */}
+        <Text style={styles.label}>Regular/Entrance Exam</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Select Exam"
+          value={regularExam}
+          onChangeText={setRegularExam}
+        />
 
-      {/* Save & Continue */}
-      <TouchableOpacity style={styles.button} onPress={saveAndContinue}>
-        <Text style={styles.buttonText}>Save & Continue</Text>
-      </TouchableOpacity>
+        {/* Rank */}
+        <Text style={styles.label}>Rank:</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter Rank"
+          keyboardType="numeric"
+          value={rank}
+          onChangeText={setRank}
+        />
+
+        {/* CGPA */}
+        <Text style={styles.label}>CGPA / Percentile Point:</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter CGPA or Percentile"
+          keyboardType="numeric"
+          value={cgpa}
+          onChangeText={setCgpa}
+        />
+
+        {/* Obtain Mark */}
+        <Text style={styles.label}>Obtain Mark:</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter Obtain Mark"
+          keyboardType="numeric"
+          value={obtainMark}
+          onChangeText={setObtainMark}
+        />
+
+        {/* Save & Continue */}
+        <TouchableOpacity style={styles.button} onPress={saveAndContinue}>
+          <Text style={styles.buttonText}>Save & Continue</Text>
+        </TouchableOpacity>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 };
@@ -176,8 +183,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
+  },
+  scrollContent: {
     paddingHorizontal: 20,
-    paddingVertical: 30,
+    paddingBottom: 30,
   },
   headerContainer: {
     flexDirection: "row",

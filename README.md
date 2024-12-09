@@ -56,3 +56,7 @@ step 2 :download .aab file
 step 3 :below jar release download
 
 -https://github.com/google/bundletool/releases
+
+# CountryPicker package update
+
+- npm i react-native-dropdown-country-picker
