@@ -60,3 +60,5 @@ step 3 :below jar release download
 # CountryPicker package update
 
 - npm i react-native-dropdown-country-picker
+
+http://192.168.5.137:5002/

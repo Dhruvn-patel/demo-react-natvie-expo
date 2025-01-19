@@ -8,10 +8,13 @@ import {
   StyleSheet,
   FlatList,
   Platform,
+  Image,
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { Formik } from "formik";
+import * as Yup from "yup";
 
-type DropdownKey = "subject" | "location";
+type DropdownKey = "location" | "gender";
 
 interface FormField {
   label: string;
@@ -19,19 +22,19 @@ interface FormField {
   keyboardType?: "default" | "email-address";
 }
 
+interface FormValues {
+  fullName: string;
+  email: string;
+  gender: string;
+  dob: Date | null;
+  location: string;
+}
+
 const profileDetails: React.FC = () => {
   const router = useRouter();
-
-  const [selectedGender, setSelectedGender] = useState<string | null>(null);
-  const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState<string>("");
-  const [dob, setDob] = useState<Date | null>(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
-
-  const [dropdowns, setDropdowns] = useState<Record<DropdownKey, boolean>>({
-    subject: false,
-    location: false,
-  });
+  const [showDropdown, setShowDropdown] = useState<DropdownKey | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   const locations = [
     "New York",
@@ -46,51 +49,73 @@ const profileDetails: React.FC = () => {
     "San Jose",
   ];
 
+  const genderOptions = ["Male", "Female", "Other"];
+
   const filteredLocations = locations.filter((location) =>
     location.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleSetupProfile = (): void => {
-    router.push("/(app)/educationDetails");
+  const validationSchema = Yup.object().shape({
+    fullName: Yup.string()
+      .required("Full name is required")
+      .min(2, "Name must be at least 2 characters"),
+    email: Yup.string()
+      .email("Invalid email address")
+      .required("Email is required"),
+    gender: Yup.string().required("Gender is required"),
+    dob: Yup.date().nullable().required("Date of birth is required"),
+    location: Yup.string().required("Location is required"),
+  });
+
+  const initialValues: FormValues = {
+    fullName: "",
+    email: "",
+    gender: "",
+    dob: null,
+    location: "",
   };
 
-  const handleDropdownToggle = (key: DropdownKey): void => {
-    setDropdowns((prevState) => ({
-      ...prevState,
-      [key]: !prevState[key],
-    }));
+  const formatDate = (date: Date) => {
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
+  const handleSetupProfile = (values: FormValues): void => {
+    console.log("Form Values:", values);
+    router.push("/(app)/educationDetails");
   };
 
   const renderDropdown = (
     key: DropdownKey,
     data: string[],
     onSelect: (value: string) => void
-  ): React.ReactNode => {
-    if (!dropdowns[key]) return null;
+  ) => {
+    if (showDropdown !== key) return null;
 
     return (
       <View style={styles.dropdownContainer}>
         {key === "location" && (
           <TextInput
             style={styles.searchInput}
-            placeholder="Search..."
+            placeholder="Search location..."
             value={searchQuery}
             onChangeText={setSearchQuery}
+            placeholderTextColor="#A0A0A0"
           />
         )}
         <FlatList
           data={data}
           keyExtractor={(item) => item}
+          style={styles.dropdownList}
           renderItem={({ item }) => (
             <TouchableOpacity
               style={styles.dropdownItem}
               onPress={() => {
                 onSelect(item);
-                setDropdowns((prevState) => ({
-                  ...prevState,
-                  [key]: false,
-                }));
-                setSearchQuery(""); // Reset search on selection
+                setShowDropdown(null);
+                setSearchQuery("");
               }}
             >
               <Text style={styles.dropdownItemText}>{item}</Text>
@@ -102,113 +127,183 @@ const profileDetails: React.FC = () => {
     );
   };
 
-  const handleDateChange = (event: any, selectedDate?: Date) => {
-    setShowDatePicker(false);
-    if (selectedDate) setDob(selectedDate);
-  };
-
-  const formData: FormField[] = [
-    { label: "Student Full Name", placeholder: "Enter your name" },
-    {
-      label: "Email",
-      placeholder: "Enter your email",
-      keyboardType: "email-address",
-    },
-  ];
-
   return (
-    <FlatList
-      data={formData}
-      keyExtractor={(item) => item.label}
-      ListHeaderComponent={
-        <>
-          <Text style={styles.skip}>Skip {">>"}</Text>
-          <Text style={styles.header}>Profile Details</Text>
-          <Text style={styles.subHeader}>
-            Fill up the correct details as it is.
-          </Text>
-          <View style={styles.divider} />
-        </>
-      }
-      renderItem={({ item }) => (
-        <>
-          <Text style={styles.label}>{item.label}</Text>
-          <TextInput
-            style={styles.input}
-            placeholder={item.placeholder}
-            keyboardType={item.keyboardType || "default"}
-          />
-        </>
-      )}
-      ListFooterComponent={
-        <>
-          {/* Gender */}
-          <Text style={styles.label}>Gender</Text>
-          <View style={styles.genderContainer}>
-            {["Male", "Female", "Other"].map((gender) => (
-              <TouchableOpacity
-                key={gender}
+    <Formik
+      initialValues={initialValues}
+      validationSchema={validationSchema}
+      onSubmit={handleSetupProfile}
+    >
+      {({
+        handleChange,
+        handleSubmit,
+        values,
+        errors,
+        touched,
+        setFieldValue,
+      }) => (
+        <FlatList
+          data={[]}
+          renderItem={null}
+          ListHeaderComponent={
+            <>
+              <Text style={styles.skip}>Skip {">>"}</Text>
+              <Text style={styles.header}>Profile Details</Text>
+              <Text style={styles.subHeader}>
+                Fill up the correct details as it is.
+              </Text>
+              <View style={styles.divider} />
+
+              {/* Full Name Input */}
+              <Text style={styles.label}>Student Full Name</Text>
+              <TextInput
                 style={[
-                  styles.genderButton,
-                  selectedGender === gender && styles.genderButtonSelected,
+                  styles.input,
+                  errors.fullName && touched.fullName && styles.inputError,
                 ]}
-                onPress={() => setSelectedGender(gender)}
+                placeholder="Enter your name"
+                onChangeText={handleChange("fullName")}
+                value={values.fullName}
+              />
+              {errors.fullName && touched.fullName && (
+                <Text style={styles.errorText}>{errors.fullName}</Text>
+              )}
+
+              {/* Email Input */}
+              <Text style={styles.label}>Email</Text>
+              <TextInput
+                style={[
+                  styles.input,
+                  errors.email && touched.email && styles.inputError,
+                ]}
+                placeholder="Enter your email"
+                keyboardType="email-address"
+                onChangeText={handleChange("email")}
+                value={values.email}
+              />
+              {errors.email && touched.email && (
+                <Text style={styles.errorText}>{errors.email}</Text>
+              )}
+            </>
+          }
+          ListFooterComponent={
+            <>
+              {/* Gender Selection */}
+              <Text style={styles.label}>Gender</Text>
+              <TouchableOpacity
+                style={[
+                  styles.input,
+                  errors.gender && touched.gender && styles.inputError,
+                ]}
+                onPress={() =>
+                  setShowDropdown(showDropdown === "gender" ? null : "gender")
+                }
               >
                 <Text
                   style={[
-                    styles.genderButtonText,
-                    selectedGender === gender &&
-                      styles.genderButtonTextSelected,
+                    styles.inputText,
+                    values.gender && styles.selectedText,
                   ]}
                 >
-                  {gender}
+                  {values.gender || "Select Gender"}
                 </Text>
               </TouchableOpacity>
-            ))}
-          </View>
+              {renderDropdown("gender", genderOptions, (gender) => {
+                setFieldValue("gender", gender);
+              })}
+              {errors.gender && touched.gender && (
+                <Text style={styles.errorText}>{errors.gender}</Text>
+              )}
 
-          {/* Date of Birth */}
-          <Text style={styles.label}>Date of Birth</Text>
-          <TouchableOpacity
-            style={styles.input}
-            onPress={() => setShowDatePicker(true)}
-          >
-            <Text style={styles.inputText}>
-              {dob ? dob.toDateString() : "Select Date of Birth"}
-            </Text>
-          </TouchableOpacity>
-          {showDatePicker && (
-            <DateTimePicker
-              value={dob || new Date()}
-              mode="date"
-              display={Platform.OS === "ios" ? "spinner" : "default"}
-              onChange={handleDateChange}
-            />
-          )}
+              {/* Date of Birth */}
+              <Text style={styles.label}>Date of Birth</Text>
+              <TouchableOpacity
+                style={[
+                  styles.dateInputContainer,
+                  errors.dob && touched.dob && styles.inputError,
+                ]}
+                onPress={() => setShowDatePicker(true)}
+              >
+                <Text
+                  style={[
+                    styles.dateInputText,
+                    values.dob && styles.selectedText,
+                  ]}
+                >
+                  {values.dob ? formatDate(values.dob) : "DD/MM/YYYY"}
+                </Text>
+                <Image
+                  source={require("../../assets/icons/calendar-icon.png")}
+                  style={styles.calendarIcon}
+                />
+              </TouchableOpacity>
+              {showDatePicker && (
+                <DateTimePicker
+                  value={values.dob || new Date()}
+                  mode="date"
+                  display={Platform.OS === "ios" ? "spinner" : "default"}
+                  onChange={(event, selectedDate) => {
+                    setShowDatePicker(Platform.OS === "ios");
+                    if (selectedDate) {
+                      setFieldValue("dob", selectedDate);
+                    }
+                  }}
+                />
+              )}
+              {errors.dob && touched.dob && (
+                <Text style={styles.errorText}>{errors.dob}</Text>
+              )}
 
-          {/* Location */}
-          <Text style={styles.label}>City/Location</Text>
-          <TouchableOpacity
-            style={styles.input}
-            onPress={() => handleDropdownToggle("location")}
-          >
-            <Text style={styles.inputText}>
-              {selectedLocation || "Select Location (Searchable List)"}
-            </Text>
-          </TouchableOpacity>
-          {renderDropdown("location", filteredLocations, setSelectedLocation)}
+              {/* Location Selection */}
+              <Text style={styles.label}>City/Location</Text>
+              <TouchableOpacity
+                style={[
+                  styles.locationInput,
+                  errors.location && touched.location && styles.inputError,
+                ]}
+                onPress={() =>
+                  setShowDropdown(
+                    showDropdown === "location" ? null : "location"
+                  )
+                }
+              >
+                <Text
+                  style={[
+                    styles.inputText,
+                    values.location && styles.selectedText,
+                  ]}
+                >
+                  {values.location || "Select Location"}
+                </Text>
+              </TouchableOpacity>
+              {renderDropdown("location", filteredLocations, (location) => {
+                setFieldValue("location", location);
+              })}
+              {errors.location && touched.location && (
+                <Text style={styles.errorText}>{errors.location}</Text>
+              )}
 
-          {/* Save Button */}
-          <TouchableOpacity style={styles.button} onPress={handleSetupProfile}>
-            <Text style={styles.buttonText}>Save & Continue</Text>
-          </TouchableOpacity>
+              {/* Submit Button */}
+              <TouchableOpacity
+                style={styles.saveButton}
+                onPress={() => handleSubmit()}
+              >
+                <Text style={styles.saveButtonText}>Save & Continue</Text>
+              </TouchableOpacity>
 
-          {/* Go to Desk */}
-          <Text style={styles.goToDesk}>Go to my desk</Text>
-        </>
-      }
-      contentContainerStyle={styles.container}
-    />
+              {/* Go to Desk */}
+              <TouchableOpacity
+                onPress={() => {
+                  router.push("/(tabs)/home");
+                }}
+              >
+                <Text style={styles.goToDesk}>Go to my desk</Text>
+              </TouchableOpacity>
+            </>
+          }
+          contentContainerStyle={styles.container}
+        />
+      )}
+    </Formik>
   );
 };
 
@@ -247,7 +342,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     color: "#000",
-    marginBottom: 5,
+    marginBottom: 8,
     fontWeight: "500",
   },
   input: {
@@ -255,71 +350,79 @@ const styles = StyleSheet.create({
     borderColor: "#E0E0E0",
     borderRadius: 8,
     padding: 12,
-    marginBottom: 15,
+    marginBottom: 5,
     fontSize: 16,
     color: "#000",
     backgroundColor: "#F9F9F9",
   },
+  inputError: {
+    borderColor: "#FF0000",
+  },
+  errorText: {
+    color: "#FF0000",
+    fontSize: 12,
+    marginBottom: 10,
+  },
   inputText: {
     color: "#A0A0A0",
-  },
-  button: {
-    backgroundColor: "#1A1B1D",
-    padding: 15,
-    borderRadius: 8,
-    alignItems: "center",
-    marginTop: 10,
-  },
-  buttonText: {
-    color: "#fff",
     fontSize: 16,
-    fontWeight: "bold",
   },
-  goToDesk: {
-    textAlign: "center",
+  selectedText: {
     color: "#000",
-    fontSize: 16,
-    marginTop: 20,
   },
-  genderContainer: {
+  dateInputContainer: {
     flexDirection: "row",
-    justifyContent: "space-around",
-    marginBottom: 15,
-  },
-  genderButton: {
+    alignItems: "center",
     borderWidth: 1,
     borderColor: "#E0E0E0",
     borderRadius: 8,
     padding: 12,
-    flex: 1,
-    alignItems: "center",
-    marginHorizontal: 5,
+    marginBottom: 5,
     backgroundColor: "#F9F9F9",
   },
-  genderButtonSelected: {
-    borderColor: "#007BFF",
-    backgroundColor: "#DCEEFF",
-  },
-  genderButtonText: {
+  dateInputText: {
+    flex: 1,
     fontSize: 16,
-    color: "#000",
+    color: "#A0A0A0",
   },
-  genderButtonTextSelected: {
-    color: "#007BFF",
-    fontWeight: "bold",
+  calendarIcon: {
+    width: 24,
+    height: 24,
+  },
+  locationInput: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 5,
+    backgroundColor: "#F9F9F9",
   },
   dropdownContainer: {
     borderWidth: 1,
     borderColor: "#E0E0E0",
     borderRadius: 8,
-    padding: 10,
-    marginBottom: 15,
     backgroundColor: "#fff",
-    elevation: 2,
-    maxHeight: 150,
+    marginBottom: 15,
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  searchInput: {
+    borderBottomWidth: 1,
+    borderColor: "#E0E0E0",
+    padding: 12,
+    fontSize: 16,
+    color: "#000",
+  },
+  dropdownList: {
+    maxHeight: 200,
   },
   dropdownItem: {
-    paddingVertical: 10,
+    padding: 12,
     borderBottomWidth: 1,
     borderBottomColor: "#E0E0E0",
   },
@@ -327,14 +430,25 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#000",
   },
-  searchInput: {
-    borderWidth: 1,
-    borderColor: "#E0E0E0",
-    borderRadius: 8,
-    padding: 10,
-    marginBottom: 10,
+  saveButton: {
+    backgroundColor: "#192335",
+    borderRadius: 30,
+    marginTop: 20,
+    marginBottom: 5,
+  },
+  saveButtonText: {
+    color: "#fff",
     fontSize: 16,
+    fontWeight: "bold",
+    textAlign: "center",
+    padding: 15,
+  },
+  goToDesk: {
+    textAlign: "center",
     color: "#000",
+    fontSize: 16,
+    marginTop: 20,
+    fontWeight: "500",
   },
 });
 

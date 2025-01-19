@@ -1,4 +1,4 @@
-import CountryPickerItem from "@/components/atoms/CountryPickerItem";
+import CountryPickerItem from "@/components/atoms/CountryPickerWrapper";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
@@ -19,7 +19,7 @@ const signIn: React.FC = () => {
   const [countryCode, setCountryCode] = useState<CountryCode>("IN");
   const [callingCode, setCallingCode] = useState<string>("91");
   const [showPin, setShowPin] = useState<boolean>(false);
-  const [isLoginWithEmail, setIsLoginWithEmail] = useState<boolean>(false);
+  const [isLoginWithEmail, setIsLoginWithEmail] = useState<boolean>(true);
 
   // Handle country selection
   const handleSelectCountry = (country: Country) => {
@@ -114,7 +114,7 @@ const signIn: React.FC = () => {
         <Text style={styles.loginButtonText}>Continue to Login</Text>
       </TouchableOpacity>
 
-      {isLoginWithEmail ? (
+      {!isLoginWithEmail ? (
         <TouchableOpacity
           style={styles.loginWithEmailButton}
           onPress={handleLogin}

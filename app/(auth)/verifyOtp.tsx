@@ -19,6 +19,7 @@ const VerifyOtp: React.FC = () => {
     if (otp.length === 6) {
       Alert.alert("OTP Verified", `Entered OTP: ${otp}`);
       router.push("/(auth)/generatePin");
+      setOtp("");
     } else {
       Alert.alert("Error", "Please enter a valid 6-digit OTP");
     }
@@ -27,12 +28,12 @@ const VerifyOtp: React.FC = () => {
   const handleResendOtp = () => {
     setResendDisabled(true);
     Alert.alert("OTP Resent", "A new OTP has been sent to your number.");
-    setTimeout(() => setResendDisabled(false), 30000); // Disable for 30 seconds
+    setTimeout(() => setResendDisabled(false), 30000);
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.logo}>Careerbox</Text>
+      <Text style={styles.logo}>Career box</Text>
       <Text style={styles.title}>Verify OTP</Text>
       <Text style={styles.subtitle}>
         We sent a code to{" "}
@@ -47,7 +48,7 @@ const VerifyOtp: React.FC = () => {
         style={styles.gradientLine}
       />
 
-      <Text style={styles.otpText}>Enter Otp</Text>
+      <Text style={styles.otpText}>Enter OTP</Text>
       <TextInput
         style={styles.input}
         placeholder="######"

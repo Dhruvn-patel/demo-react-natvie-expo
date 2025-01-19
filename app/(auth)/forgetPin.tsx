@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import CountryPicker from "react-native-country-picker-modal";
+import { useRouter } from "expo-router";
 
 const forgetPin: React.FC = () => {
   const [phone, setPhone] = useState<string>("");
@@ -17,7 +18,7 @@ const forgetPin: React.FC = () => {
   const [otp, setOtp] = useState<string>("");
   const [otpSent, setOtpSent] = useState<boolean>(false);
   const [isResendDisabled, setResendDisabled] = useState(false);
-
+  const router = useRouter();
   const handleSendOtp = () => {
     if (phone.length !== 10) {
       alert("Please enter a valid 10-digit phone number.");
@@ -34,7 +35,7 @@ const forgetPin: React.FC = () => {
   };
 
   const handleBackToLogin = () => {
-    alert("Back to Login clicked.");
+    router.push("/(auth)/signIn");
   };
 
   return (

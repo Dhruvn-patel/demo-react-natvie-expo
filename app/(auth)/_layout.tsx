@@ -10,12 +10,12 @@ const Layout = () => {
   return (
     <SafeAreaProvider>
       <Stack screenOptions={screenOptions}>
-        <Stack.Screen name="onBoarding" options={{ headerShown: false }} />
-        <Stack.Screen name="singIn" options={{ headerShown: false }} />
-        <Stack.Screen name="signUp" options={{ headerShown: false }} />
-        <Stack.Screen name="verifyOtp" options={{ headerShown: false }} />
-        <Stack.Screen name="generatePin" options={{ headerShown: false }} />
-        <Stack.Screen name="forgetPin" options={{ headerShown: false }} />
+        <Stack.Screen name="onBoarding" />
+        <Stack.Screen name="singIn" />
+        <Stack.Screen name="signUp" />
+        <Stack.Screen name="verifyOtp" />
+        <Stack.Screen name="generatePin" />
+        <Stack.Screen name="forgetPin" />
       </Stack>
     </SafeAreaProvider>
   );

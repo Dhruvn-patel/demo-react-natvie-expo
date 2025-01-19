@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   View,
   Text,
@@ -6,37 +6,37 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
+  Animated,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 
 const GeneratePin: React.FC = () => {
   const router = useRouter();
-  const [mpin, setMpin] = useState("");
-  const [confirmMpin, setConfirmMpin] = useState("");
-  const [isPinCreated, setIsPinCreated] = useState(false); // Track whether MPIN is created
+  const [pin, setPin] = useState("");
+  const [confirmPin, setConfirmPin] = useState("");
+  const [isPinCreated, setIsPinCreated] = useState(false);
 
   const handleCreatePin = () => {
-    if (mpin.length === 4 && confirmMpin.length === 4) {
-      if (mpin === confirmMpin) {
-        Alert.alert("Success", "MPIN created successfully!");
+    if (pin.length === 4 && confirmPin.length === 4) {
+      if (pin === confirmPin) {
+        Alert.alert("Success", "pin created successfully!");
         setIsPinCreated(true); // Show CompleteAuthScreen
       } else {
-        Alert.alert("Error", "MPINs do not match. Please try again.");
+        Alert.alert("Error", "pins do not match. Please try again.");
       }
     } else {
-      Alert.alert("Error", "Please enter a valid 4-digit MPIN.");
+      Alert.alert("Error", "Please enter a valid 4-digit pin.");
     }
   };
 
   const handleBackToLogin = () => {
-    Alert.alert("Navigate", "Navigating back to login...");
+    router.push("/(auth)/signIn");
   };
   const handleSetupProfile = () => {
     router.push("/(app)/profileDetails");
   };
 
-  // Render CompleteAuthScreen if MPIN is successfully created
   if (isPinCreated) {
     return (
       <View style={styles.container}>
@@ -62,7 +62,11 @@ const GeneratePin: React.FC = () => {
           <Text style={styles.setupProfileText}>Setup Student Profile</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            router.push("/(tabs)/home");
+          }}
+        >
           <Text style={styles.goToDeskLink}>Go to My Desk</Text>
         </TouchableOpacity>
       </View>
@@ -72,7 +76,7 @@ const GeneratePin: React.FC = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.logo}>Careerbox</Text>
-      <Text style={styles.title}>Create MPIN</Text>
+      <Text style={styles.title}>Create pin</Text>
       <Text style={styles.subtitle}>Create 4 digit pin for easy login</Text>
 
       {/* Gradient Line */}
@@ -84,24 +88,26 @@ const GeneratePin: React.FC = () => {
       />
 
       {/* Input Fields */}
-      <Text style={styles.inputLabel}>Enter 4 digit MPIN</Text>
+      <Text style={styles.inputLabel}>Enter 4 digit pin</Text>
       <TextInput
         style={styles.input}
         placeholder="####"
         keyboardType="number-pad"
         maxLength={4}
-        onChangeText={(text) => setMpin(text)}
-        value={mpin}
+        onChangeText={(text) => setPin(text)}
+        secureTextEntry={true}
+        value={pin}
       />
 
-      <Text style={styles.inputLabel}>Confirm MPIN</Text>
+      <Text style={styles.inputLabel}>Confirm pin</Text>
       <TextInput
         style={[styles.input, styles.confirmInput]}
         placeholder="####"
         keyboardType="number-pad"
         maxLength={4}
-        onChangeText={(text) => setConfirmMpin(text)}
-        value={confirmMpin}
+        onChangeText={(text) => setConfirmPin(text)}
+        value={confirmPin}
+        secureTextEntry={true}
       />
 
       {/* Create PIN Button */}
