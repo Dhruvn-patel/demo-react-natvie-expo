@@ -29,7 +29,7 @@ const TabLayout = () => {
                 ? require("../../assets/icons/messages-active.png")
                 : require("../../assets/icons/messages-inactive.png");
               break;
-            case "courses":
+            case "companies":
               iconSource = focused
                 ? require("../../assets/icons/courses-active.png")
                 : require("../../assets/icons/courses-inactive.png");
@@ -53,7 +53,7 @@ const TabLayout = () => {
       <Tabs.Screen name="home" />
       <Tabs.Screen name="preferences" />
       <Tabs.Screen name="messages" />
-      <Tabs.Screen name="courses" />
+      <Tabs.Screen name="companies" />
     </Tabs>
   );
 };

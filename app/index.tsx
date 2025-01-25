@@ -39,22 +39,22 @@ const Page: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#FFFFFF",
-  },
-  logoContainer: {
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  logoText: {
-    fontSize: 30,
-    fontWeight: "bold",
-    color: "#000",
-  },
-});
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: "#FFFFFF",
+    },
+    logoContainer: {
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    logoText: {
+      fontSize: 30,
+      fontWeight: "bold",
+      color: "#000",
+    },
+  });
 
 export default Page;

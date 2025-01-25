@@ -7,6 +7,7 @@ const Layout = () => {
       <Stack.Screen name="educationDetails" />
       <Stack.Screen name="eligibilityForm" />
       <Stack.Screen name="preferenceCourse" />
+      <Stack.Screen name="collegeDetails" />
     </Stack>
   );
 };
